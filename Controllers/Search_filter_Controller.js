@@ -1,4 +1,4 @@
-const Blog = require("../Models/Blog");
+const Course = require("../Models/Course");
 const Categories = require("../Models/Categories");
 const Topinstructors = require("../Models/Topinstructors");
 
@@ -20,7 +20,7 @@ const Courselist_Controller = async (req, res) => {
         if (TagFilter.length > 0) {
             query.Tags = { $in: TagFilter };
         }
-        const blogs = await Blog.find(query);
+        const blogs = await Course.find(query);
         res.status(200).json(blogs);
     } catch (error) {
         res.status(500).json({ msg: "Internal server error occurred" });
