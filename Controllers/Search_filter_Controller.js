@@ -3,28 +3,27 @@ const Categories = require("../Models/Categories");
 const Topinstructors = require("../Models/Topinstructors");
 
 
-const Courselist_Controller = async (req, res) => {
+const Courselist_Controller =async (req, res) => {
     try {
-        const limit = 5;
-        const searchQuery = req.query.search;
-        const categoriesFilter = req.query.categories ? req.query.categories.split(",") : [];
-        const TagFilter = req.query.tags ? req.query.tags.split(",") : [];
+        const { category,search, price } = req.query;
 
-        const query = {};
-        if (searchQuery!==null) {
-            query.name = { $regex: searchQuery, $options: "i" };
+        const filter = {};
+
+
+        if (category) {
+            filter.category = category;
         }
-        if (categoriesFilter.length > 0) {
-            query.categories = { $in: categoriesFilter };
-        }
-        if (TagFilter.length > 0) {
-            query.Tags = { $in: TagFilter };
-        }
-        const blogs = await Course.find(query);
-        res.status(200).json(blogs);
+        const textSearchQuery = search ? { course_name: { $regex: search, $options: "i" } } : {};
+        const pricefilter = price ? { course_price: { $lte: price } } : {};
+        // Query the database based on filters and search text
+        const courses = await Course.find({ ...filter, ...textSearchQuery, ...pricefilter }).populate({
+            path: 'creator',
+            select: "instructor_pic instructor_name"
+        });
+        res.json({ data: courses, leng: courses.length, total: await Course.countDocuments() });
     } catch (error) {
-        res.status(500).json({ msg: "Internal server error occurred" });
-        console.log(error);
+        console.error('Error fetching courses:', error);
+        res.status(500).json({ error: 'Internal server error' });
     }
 }
 
