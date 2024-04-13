@@ -16,7 +16,7 @@ const AdminRoute = require("./Routes/AdminRoute");
 const CategoriesRouter = require("./Routes/Filters");
 
 app.use(cors({
-    origin: ['https://edudevwebonline.netlify.app/','http://localhost:5173'],
+    origin: ['https://edudevwebonline.netlify.app','http://localhost:5173'],
     credentials: true,
 
 }));
