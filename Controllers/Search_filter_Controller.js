@@ -20,7 +20,7 @@ const Courselist_Controller =async (req, res) => {
             path: 'creator',
             select: "instructor_pic instructor_name"
         });
-        res.json({ data: courses, leng: courses.length, total: await Course.countDocuments() });
+        res.json({  courses: courses, leng: courses.length, total: await Course.countDocuments() });
     } catch (error) {
         console.error('Error fetching courses:', error);
         res.status(500).json({ error: 'Internal server error' });
