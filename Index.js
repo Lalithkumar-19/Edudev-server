@@ -14,6 +14,7 @@ const InstuctorRoute = require("./Routes/InstuctorRoute");
 const PaymentRoute = require("./Routes/PaymentRoute");
 const AdminRoute = require("./Routes/AdminRoute");
 const CategoriesRouter = require("./Routes/Filters");
+const PORT=process.env.PORT || 5000;
 
 app.use(cors({
     origin: "*,
@@ -42,6 +43,6 @@ app.use(PaymentRoute);
 
 
 
-app.listen(5000, () => console.log("server is running on port 5000"));
+app.listen(PORT, () => console.log("server is running on port 5000"));
 
 
