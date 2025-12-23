@@ -14,13 +14,16 @@ const InstuctorRoute = require("./Routes/InstuctorRoute");
 const PaymentRoute = require("./Routes/PaymentRoute");
 const AdminRoute = require("./Routes/AdminRoute");
 const CategoriesRouter = require("./Routes/Filters");
-const PORT=process.env.PORT || 5000;
+const PORT = process.env.PORT || 5000;
 
 app.use(cors({
     origin: "*",
     credentials: true,
 
 }));
+app.get("/", (req, res) => {
+    res.send("Hello from server")
+})
 
 
 app.use(cookieParser());
