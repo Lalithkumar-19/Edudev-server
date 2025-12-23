@@ -2,7 +2,7 @@
   "name": "edudev-server",
   "version": "1.0.0",
   "description": "",
-  "main": "Index.js",
+  "main": "index.js",
   "scripts": {
     "start": "nodemon index.js"
   },
