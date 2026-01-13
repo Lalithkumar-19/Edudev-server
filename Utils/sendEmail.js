@@ -3,7 +3,7 @@ const { default: axios } = require('axios');
 
 const sendEmail = async (options) => {
     try {
-        const res = await axios.post("https://n8n.srv1116545.hstgr.cloud/webhook/05b95207-f016-4fde-9030-fb6b332c8856", options);
+        const res = await axios.post("https://n8n.srv1234562.hstgr.cloud/webhook/05b95207-f016-4fde-9030-fb6b332c8856", options);
         console.log(res.data);
         if (res.status !== 200) {
             throw new Error('Email could not be sent');
