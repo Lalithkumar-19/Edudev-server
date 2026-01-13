@@ -21,6 +21,7 @@ app.use(cors({
     credentials: true,
 
 }));
+
 app.get("/", (req, res) => {
     res.send("Hello from server")
 })

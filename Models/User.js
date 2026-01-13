@@ -23,6 +23,12 @@ const UserSchema = new Schema({
         type: String,
         required: true,
     },
+    otp: {
+        type: String,
+    },
+    otpExpires: {
+        type: Date,
+    },
     instructor: { type: Boolean, default: false },
     cart: [{
         product_details: { type: mongoose.Schema.Types.ObjectId, ref: "Book" },
@@ -36,6 +42,6 @@ const UserSchema = new Schema({
     Blogs: [{ type: Schema.Types.ObjectId, ref: "Blog" }],
     learnings: [{ type: Schema.Types.ObjectId, ref: "Courses" }],
 
-},{timestamps:true});
+}, { timestamps: true });
 
 module.exports = model("Users", UserSchema);

@@ -5,6 +5,8 @@ const fs = require("fs");
 const { default: mongoose } = require("mongoose");
 const GoogleUsers = require("../Models/GoogleUsers");
 const { bucket } = require("../firebase");
+const sendEmail = require("../Utils/sendEmail");
+const crypto = require("crypto");
 
 const signupController = async (req, res) => {
     //sig up
@@ -173,16 +175,16 @@ const Update_User_controller = async (req, res) => {
 }
 const Update_User_dp_controller = async (req, res) => {
     try {
-       
+
         if (!req.downloadURl) {
             return res.status(400).send('No file uploaded');
         }
-       
-            const user = await User.findById(req.user || req.query.id);
-            user.dp = req.downloadURl;
-            user.save();
-            res.status(200).json(user);
-            console.log('File uploaded successfully');  
+
+        const user = await User.findById(req.user || req.query.id);
+        user.dp = req.downloadURl;
+        user.save();
+        res.status(200).json(user);
+        console.log('File uploaded successfully');
 
     } catch (error) {
         console.log(error);
@@ -204,6 +206,85 @@ const Get_user_cart_wishlist = async (req, res) => {
 
 
 
+
+const forgotPasswordController = async (req, res) => {
+    try {
+        const { email } = req.body;
+        const user = await User.findOne({ email });
+
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
+        }
+
+        // Generate 6 digit OTP
+        const otp = Math.floor(100000 + Math.random() * 900000).toString();
+
+        // Check if user has an unexpired OTP
+        if (user.otp && user.otpExpires > Date.now()) {
+            // Optional: You might want to prevent spamming OTPs here
+            // For now, we'll overwrite it
+        }
+
+        user.otp = otp;
+        // Expires in 5 minutes
+        user.otpExpires = Date.now() + 5 * 60 * 1000;
+
+        await user.save();
+
+        const message = `Your password reset OTP is ${otp}. It is valid for 5 minutes.`;
+
+        try {
+            await sendEmail({
+                email: user.email,
+                subject: "Password Reset OTP",
+                message: message,
+            });
+
+            res.status(200).json({ message: "OTP sent to email" });
+        } catch (err) {
+            user.otp = undefined;
+            user.otpExpires = undefined;
+            await user.save();
+            return res.status(500).json({ message: "Email could not be sent. Please try again later." });
+        }
+
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: "Internal server error" });
+    }
+};
+
+const resetPasswordController = async (req, res) => {
+    try {
+        const { email, otp, newPassword } = req.body;
+        const user = await User.findOne({
+            email,
+            otp,
+            otpExpires: { $gt: Date.now() }
+        });
+
+        if (!user) {
+            return res.status(400).json({ message: "Invalid or expired OTP" });
+        }
+
+        const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+        user.password = hashedPassword;
+        user.otp = undefined;
+        user.otpExpires = undefined;
+
+        await user.save();
+
+        res.status(200).json({ message: "Password reset successful" });
+
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: "Internal server error" });
+    }
+};
+
+
+
 module.exports = {
     signupController,
     LoginController,
@@ -215,4 +296,6 @@ module.exports = {
     Get_user_cart_wishlist,
     Remove_from_cart,
     Remove_from_wishlist,
+    forgotPasswordController,
+    resetPasswordController
 }
